@@ -1,6 +1,4 @@
 ﻿using HarmonyLib;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace TreysLeviGrip
@@ -10,31 +8,39 @@ namespace TreysLeviGrip
     {
         static void Postfix(OVRCameraRig __instance)
         {
-            if (Plugin.leviGrip && !Plugin.flipAnimation)
+            Vector3 startRotation;
+            Vector3 endRotation;
+            Vector3 rotationOffset;
+            
+            // Left Hand Flipping
+            if (Plugin.leftLeviGrip && !Plugin.leftFlipAnimation) __instance.leftHandAnchor.Rotate(Plugin.offset);
+            else if (Plugin.leftFlipAnimation)
             {
-                // Apply the offset to both hands, rotating them in the same direction
-                __instance.leftHandAnchor.Rotate(Plugin.offset);
-                __instance.rightHandAnchor.Rotate(Plugin.offset);
-            }
-            else if (Plugin.flipAnimation)
-            {
-                Plugin.PluginLogger.LogInfo("Flipping");
+                //Plugin.PluginLogger.LogInfo("Flipping");
 
-                // Interpolate rotation for the left hand
-                Vector3 startRotation = Plugin.leviGrip ? Vector3.zero : Plugin.offset;
-                Vector3 endRotation = Plugin.leviGrip ? Plugin.offset : Vector3.zero;
-                Vector3 rotationOffset = Vector3.Lerp(startRotation, endRotation, (Time.time - Plugin.flipStartTime) / Plugin.flipDuration);
+                startRotation = Plugin.leftLeviGrip ? Vector3.zero : Plugin.offset;
+                endRotation = Plugin.leftLeviGrip ? Plugin.offset : Vector3.zero;
+                rotationOffset = Vector3.Lerp(startRotation, endRotation, (Time.time - Plugin.leftFlipStartTime) / Plugin.flipDuration);
                 __instance.leftHandAnchor.Rotate(rotationOffset);
-                
-                startRotation = Plugin.leviGrip ? Vector3.zero : Plugin.offset + new Vector3(0, 0, -360);
-                endRotation = Plugin.leviGrip ? Plugin.offset + new Vector3(0, 0, -360) : Vector3.zero;
-                rotationOffset = Vector3.Lerp(startRotation, endRotation, (Time.time - Plugin.flipStartTime) / Plugin.flipDuration);
+
+                // End flip animation after specified duration
+                if (Time.time - Plugin.leftFlipStartTime > Plugin.flipDuration) Plugin.leftFlipAnimation = false;
+            }
+
+            // Right Hand Flipping
+            if (Plugin.rightLeviGrip && !Plugin.rightFlipAnimation) __instance.rightHandAnchor.Rotate(Plugin.offset);
+            else if (Plugin.rightFlipAnimation)
+            {
+                //Plugin.PluginLogger.LogInfo("Flipping");
+
+                startRotation = Plugin.rightLeviGrip ? Vector3.zero : Plugin.offset + new Vector3(0, 0, -360);
+                endRotation = Plugin.rightLeviGrip ? Plugin.offset + new Vector3(0, 0, -360) : Vector3.zero;
+                rotationOffset = Vector3.Lerp(startRotation, endRotation, (Time.time - Plugin.rightFlipStartTime) / Plugin.flipDuration);
                 __instance.rightHandAnchor.Rotate(rotationOffset);
 
                 // End flip animation after specified duration
-                if (Time.time - Plugin.flipStartTime > Plugin.flipDuration) Plugin.flipAnimation = false;
+                if (Time.time - Plugin.rightFlipStartTime > Plugin.flipDuration) Plugin.rightFlipAnimation = false;
             }
         }
-
     }
 }

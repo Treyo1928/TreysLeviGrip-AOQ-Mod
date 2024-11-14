@@ -1,7 +1,6 @@
 ﻿using BepInEx;
 using HarmonyLib;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace TreysLeviGrip
 {
@@ -13,12 +12,22 @@ namespace TreysLeviGrip
         public const string pluginVersion = "1.0.0";
         internal static BepInEx.Logging.ManualLogSource PluginLogger;
 
-        public static bool leviGrip = false;
-        private static string rotationAxis = "Z";
+        public static bool leftLeviGrip = false;
+        public static bool rightLeviGrip = false;
+
+        //private static string rotationAxis = "Z";
+        
         public static Vector3 offset = new Vector3(82, 0, 180);
-        public static bool flipAnimation = false;
-        public static float flipStartTime;
+        
+        public static bool leftFlipAnimation = false;
+        public static float leftFlipStartTime;
+
+        public static bool rightFlipAnimation = false;
+        public static float rightFlipStartTime;
+
         public static float flipDuration = 0.25f;
+
+        public static float rightHoldDuration = 0.2f;
 
         public void Awake()
         {
@@ -34,48 +43,18 @@ namespace TreysLeviGrip
 
         public void Update()
         {
-            if(OVRInput.GetDown(OVRInput.Button.One, OVRInput.Controller.LTouch) && !flipAnimation)
+            if(OVRInput.GetDown(OVRInput.Button.One, OVRInput.Controller.LTouch) && !leftFlipAnimation)
             {
-                flipAnimation = true;
-                leviGrip = !leviGrip;
-                flipStartTime = Time.time;
+                leftFlipAnimation = true;
+                leftLeviGrip = !leftLeviGrip;
+                leftFlipStartTime = Time.time;
             }
-            //    if (Input.GetKey(KeyCode.Z)) rotationAxis = "Z";
-            //    if (Input.GetKey(KeyCode.X)) rotationAxis = "X";
-            //    if (Input.GetKey(KeyCode.Y)) rotationAxis = "Y";
-            //    if (Input.GetKey(KeyCode.UpArrow))
-            //    {
-            //        switch (rotationAxis)
-            //        {
-            //            case "X":
-            //                offset = offset + new Vector3(1, 0, 0);
-            //                break;
-            //            case "Y":
-            //                offset = offset + new Vector3(0, 1, 0);
-            //                break;
-            //            case "Z":
-            //                offset = offset + new Vector3(0, 0, 1);
-            //                break;
-            //        }
-            //    }
-
-            //    if (Input.GetKey(KeyCode.DownArrow))
-            //    {
-            //        switch (rotationAxis)
-            //        {
-            //            case "X":
-            //                offset = offset - new Vector3(1, 0, 0);
-            //                break;
-            //            case "Y":
-            //                offset = offset - new Vector3(0, 1, 0);
-            //                break;
-            //            case "Z":
-            //                offset = offset - new Vector3(0, 0, 1);
-            //                break;
-            //        }
-            //    }
-
-            //    Logger.LogInfo($"Offset: {offset}");
+        }
+        public static void FlipRight()
+        {
+            rightFlipAnimation = true;
+            rightLeviGrip = !rightLeviGrip;
+            rightFlipStartTime = Time.time;
         }
     }
 }
